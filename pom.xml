@@ -6,7 +6,7 @@
     <artifactId>oss-parent</artifactId>
     <version>7</version>
   </parent>
-  <groupId>io.airbrake</groupId>
+  <groupId>com.tegonal</groupId>
   <artifactId>airbrake-java</artifactId>
   <packaging>jar</packaging>
   <version>2.2.9-SNAPSHOT</version>
