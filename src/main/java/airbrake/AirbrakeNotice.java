@@ -4,9 +4,11 @@
 
 package airbrake;
 
-import static java.util.Arrays.*;
+import static java.util.Arrays.asList;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class AirbrakeNotice {
 
@@ -29,13 +31,25 @@ public class AirbrakeNotice {
 	private String errorClass;
 
 	private boolean hasRequest = false;
+	
+	private boolean hasUser = false;
 
 	private final String url;
 
 	private final String component;
 
+    private String userId;
+
+    private String user;
+
+    private String userEmail;
+
+    private String username;
+
+    private String action;
+
 	public AirbrakeNotice(final String apiKey, String projectRoot, String environmentName, final String errorMessage, String errorClass, final Backtrace backtrace, final Map<String, Object> request, final Map<String, Object> session, final Map<String, Object> environment,
-			final List<String> environmentFilters, boolean hasRequest, String url, String component) {
+			final List<String> environmentFilters, boolean hasRequest, String url, String component, boolean hasUser, String userId, String user, String userEmail, String username, String action) {
 		this.apiKey = apiKey;
 		this.projectRoot = projectRoot;
 		this.environmentName = environmentName;
@@ -47,6 +61,12 @@ public class AirbrakeNotice {
 		this.hasRequest = hasRequest;
 		this.url = url;
 		this.component = component;
+		this.hasUser = hasUser;
+		this.userId = userId;
+		this.user = user;
+		this.userEmail = userEmail;
+		this.username = username;
+		this.action = action;
 		filter(environment, environmentFilters);
 	}
 
@@ -113,4 +133,28 @@ public class AirbrakeNotice {
 	public String url() {
 		return url;
 	}
+
+    public boolean hasUser() {
+      return hasUser;
+    }
+  
+    public String userId() {
+      return userId;
+    }
+  
+    public String user() {
+      return user;
+    }
+  
+    public String userEmail() {
+      return userEmail;
+    }
+  
+    public String username() {
+      return username;
+    }
+  
+    public String action() {
+      return action;
+    }
 }

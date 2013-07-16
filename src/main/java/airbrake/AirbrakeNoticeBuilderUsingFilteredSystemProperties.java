@@ -4,9 +4,9 @@
 
 package airbrake;
 
-import java.util.*;
+import java.util.Map;
 
-import org.apache.log4j.*;
+import org.apache.log4j.MDC;
 
 public class AirbrakeNoticeBuilderUsingFilteredSystemProperties extends AirbrakeNoticeBuilder {
 

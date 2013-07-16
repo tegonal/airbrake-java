@@ -4,10 +4,14 @@
 
 package airbrake;
 
-import static java.util.Arrays.*;
+import static java.util.Arrays.asList;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.TreeMap;
 
 public class AirbrakeNoticeBuilder {
 
@@ -34,10 +38,22 @@ public class AirbrakeNoticeBuilder {
 	private String errorClass;
 
 	private boolean hasRequest = false;
+	
+	private boolean hasUser = false;
 
 	private String url;
 
 	private String component;
+
+    private String userId;
+  
+    private String user;
+
+    private String userEmail;
+
+    private String username;
+
+    private String action;
 
 	public AirbrakeNoticeBuilder(final String apiKey, final Backtrace backtraceBuilder, final Throwable throwable, final String env) {
 		this(apiKey, throwable.getMessage(), env);
@@ -151,7 +167,7 @@ public class AirbrakeNoticeBuilder {
 	}
 
 	public AirbrakeNotice newNotice() {
-		return new AirbrakeNotice(apiKey, projectRoot, environmentName, errorMessage, errorClass, backtrace, request, session, environment, environmentFilters, hasRequest, url, component);
+		return new AirbrakeNotice(apiKey, projectRoot, environmentName, errorMessage, errorClass, backtrace, request, session, environment, environmentFilters, hasRequest, url, component, hasUser, userId, user, userEmail, username, action);
 	}
 
 	private boolean notDefined(final Object object) {
@@ -178,11 +194,20 @@ public class AirbrakeNoticeBuilder {
 		this.session.putAll(session);
 	}
 
-	protected void setRequest(String url, String component) {
+	protected void setRequest(String url, String component, String action) {
 		hasRequest = true;
 		this.url = url;
 		this.component = component;
+		this.action = action;
 	}
+	
+	protected void setUser(String userId, String user, String userEmail, String username) {
+      hasUser = true;
+      this.userId = userId;
+      this.user = user;
+      this.userEmail = userEmail;
+      this.username = username;
+  }
 
 	protected void standardEnvironmentFilters() {
 		environmentFilter("java.awt.*");

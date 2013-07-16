@@ -4,9 +4,16 @@
 
 package airbrake;
 
-import java.util.*;
+import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * Extending airbrake-java
+ * 
+ * http://airbrake.io/airbrake_2_3.xsd
+ * @author alwin.egger@tegonal.com
+ *
+ */
 public class NoticeXml {
 
 	private final StringBuilder stringBuilder = new StringBuilder();
@@ -50,6 +57,10 @@ public class NoticeXml {
 				tag("environment-name", notice.env());
 			}
 			end("server-environment");
+			
+			if(notice.hasUser()) {
+			  addCurrentUser(notice);
+			}
 		}
 		end("notice");
 	}
@@ -59,12 +70,24 @@ public class NoticeXml {
 		{
 			tag("url", notice.url());
 			tag("component", notice.component());
+			tag("action", notice.action());
 			vars("params", notice.request());
 			vars("session", notice.session());
 			vars("cgi-data", notice.environment());
 		}
 		end("request");
 	}
+	
+	private void addCurrentUser(AirbrakeNotice notice) {
+	  current_user();
+      {
+          tag("id", notice.userId());
+          tag("name", notice.user());
+          tag("email", notice.userEmail());
+          tag("username", notice.username());
+      }
+      end("current-user");
+  }
 
 	private void apikey(AirbrakeNotice notice) {
 		tag("api-key");
@@ -114,6 +137,10 @@ public class NoticeXml {
 	private void server_environment() {
 		tag("server-environment");
 	}
+	
+	private void current_user() {
+      tag("current-user");
+  }
 
 	private NoticeXml tag(String string) {
 		append("<" + string + ">");

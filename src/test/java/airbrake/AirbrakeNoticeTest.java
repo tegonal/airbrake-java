@@ -4,16 +4,25 @@
 
 package airbrake;
 
-import static airbrake.ApiKeys.*;
-import static airbrake.Exceptions.*;
-import static java.util.Arrays.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static airbrake.ApiKeys.API_KEY;
+import static airbrake.Exceptions.ERROR_MESSAGE;
+import static airbrake.Exceptions.newException;
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.logging.*;
-import org.junit.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 
 public class AirbrakeNoticeTest {
 	protected static final Backtrace BACKTRACE = new Backtrace(asList("backtrace is empty"));
@@ -172,7 +181,7 @@ public class AirbrakeNoticeTest {
 	public void testNewAirbrakeUsingBuilderNoticeWithSession() {
 		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY, ERROR_MESSAGE) {
 			{
-				setRequest("http://localhost:3000/", "controller");
+				setRequest("http://localhost:3000/", "controller", "action");
 				addSessionKey("key", "value");
 			}
 		}.newNotice();

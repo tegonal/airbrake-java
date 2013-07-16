@@ -1,10 +1,11 @@
 package airbrake;
 
-import static airbrake.ApiKeys.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static airbrake.ApiKeys.API_KEY;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
 public class NoticeApiXmlBuilderTest {
 
@@ -28,7 +29,7 @@ public class NoticeApiXmlBuilderTest {
 	public void testSendsRequest() throws Exception {
 		AirbrakeNoticeBuilder builder = new AirbrakeNoticeBuilder(API_KEY, newThrowable()) {
 			{
-				setRequest("http://example.com", "carburetor");
+				setRequest("http://example.com", "carburetor", "action");
 			}
 		};
 
@@ -39,7 +40,7 @@ public class NoticeApiXmlBuilderTest {
 	public void testSendsSessionKeyColorAndLights() throws Exception {
 		AirbrakeNoticeBuilder builder = new AirbrakeNoticeBuilder(API_KEY, newThrowable()) {
 			{
-				setRequest("http://example.com", "carburetor");
+				setRequest("http://example.com", "carburetor", "deleting");
 				addSessionKey("lights", "<blink>");
 				addSessionKey("color", "orange");
 			}

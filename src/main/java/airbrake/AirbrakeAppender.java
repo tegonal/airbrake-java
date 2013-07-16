@@ -4,20 +4,22 @@
 
 package airbrake;
 
-import org.apache.log4j.*;
-import org.apache.log4j.spi.*;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.spi.ThrowableInformation;
 
 public class AirbrakeAppender extends AppenderSkeleton {
 
 	private final AirbrakeNotifier airbrakeNotifier = new AirbrakeNotifier();
 
-	private String apiKey;
+	protected String apiKey;
 
-	private String env;
+	protected String env;
 
 	private boolean enabled;
 
-	private Backtrace backtrace = new Backtrace();
+	protected Backtrace backtrace = new Backtrace();
 
 	public AirbrakeAppender() {
 		setThreshold(Level.ERROR);
