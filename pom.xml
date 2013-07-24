@@ -68,18 +68,6 @@
       <version>1.1</version>
       <scope>test</scope>
     </dependency>
-    
-    <dependency>
-		<groupId>com.tegonal.components.wicket</groupId>
-		<artifactId>wicket-components</artifactId>
-		<version>1.0.10-SNAPSHOT</version>
-	</dependency>
-	
-	<dependency>
-	    <groupId>org.jboss.logmanager</groupId>
-    	<artifactId>jboss-logmanager</artifactId>
-    	<version>1.2.2.GA</version>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
