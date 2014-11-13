@@ -17,6 +17,7 @@ import org.apache.commons.logging.*;
 import org.hamcrest.*;
 import org.junit.*;
 
+@Ignore
 public class AirbrakeNotifierTest {
 
 	private static final int AIRBRAKE_SERVER_HTTP_CONNECTION_DELAY = 20000;
