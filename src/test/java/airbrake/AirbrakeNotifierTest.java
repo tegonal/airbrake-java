@@ -19,7 +19,9 @@ import org.junit.*;
 
 public class AirbrakeNotifierTest {
 
-	protected static final Backtrace BACKTRACE = new Backtrace(asList("backtrace is empty"));;
+	private static final int AIRBRAKE_SERVER_HTTP_CONNECTION_DELAY = 20000;
+	protected static final Backtrace BACKTRACE = new Backtrace(
+			asList("backtrace is empty"));;
 	protected static final Map<String, Object> REQUEST = new HashMap<String, Object>();
 	protected static final Map<String, Object> SESSION = new HashMap<String, Object>();
 	protected static final Map<String, Object> ENVIRONMENT = new HashMap<String, Object>();
@@ -43,7 +45,8 @@ public class AirbrakeNotifierTest {
 	}
 
 	private int notifing(final String string) {
-		return new AirbrakeNotifier().notify(new AirbrakeNoticeBuilder(API_KEY, ERROR_MESSAGE) {
+		return new AirbrakeNotifier().notify(new AirbrakeNoticeBuilder(API_KEY,
+				ERROR_MESSAGE) {
 			{
 				backtrace(new Backtrace(asList(string)));
 			}
@@ -58,14 +61,25 @@ public class AirbrakeNotifierTest {
 		EC2.put("AWS_ACCESS", "AWS_ACCESS");
 		EC2.put("EC2_CERT", "EC2_CERT");
 		notifier = new AirbrakeNotifier();
+		// Add a connection delay between the requests, the airbrake server
+		// responds with a 429 status code if too many requests are sent
+		try {
+			Thread.sleep(AIRBRAKE_SERVER_HTTP_CONNECTION_DELAY);
+		} catch (InterruptedException e) {
+		}
 	}
 
 	@Test
 	public void testHowBacktraceairbrakeNotInternalServerError() {
 		assertThat(notifing(ERROR_MESSAGE), not(internalServerError()));
-		assertThat(notifing("java.lang.RuntimeException: an expression is not valid"), not(internalServerError()));
-		assertThat(notifing("Caused by: java.lang.NullPointerException"), not(internalServerError()));
-		assertThat(notifing("at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1307)"), not(internalServerError()));
+		assertThat(
+				notifing("java.lang.RuntimeException: an expression is not valid"),
+				not(internalServerError()));
+		assertThat(notifing("Caused by: java.lang.NullPointerException"),
+				not(internalServerError()));
+		assertThat(
+				notifing("at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1307)"),
+				not(internalServerError()));
 		assertThat(notifing("... 23 more"), not(internalServerError()));
 	}
 
@@ -94,7 +108,8 @@ public class AirbrakeNotifierTest {
 	@Test
 	public void testNotifyToairbrakeUsingBuilderNoticeFromExceptionInEnv() {
 		final Exception EXCEPTION = newException(ERROR_MESSAGE);
-		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY, EXCEPTION, "test").newNotice();
+		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY,
+				EXCEPTION, "test").newNotice();
 
 		assertThat(notifier.notify(notice), is(200));
 	}
@@ -102,7 +117,8 @@ public class AirbrakeNotifierTest {
 	@Test
 	public void testNotifyToairbrakeUsingBuilderNoticeFromExceptionInEnvAndSystemProperties() {
 		final Exception EXCEPTION = newException(ERROR_MESSAGE);
-		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY, EXCEPTION, "test") {
+		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY,
+				EXCEPTION, "test") {
 			{
 				filteredSystemProperties();
 			}
@@ -114,7 +130,8 @@ public class AirbrakeNotifierTest {
 
 	@Test
 	public void testNotifyToairbrakeUsingBuilderNoticeInEnv() {
-		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY, ERROR_MESSAGE, "test").newNotice();
+		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY,
+				ERROR_MESSAGE, "test").newNotice();
 
 		assertThat(notifier.notify(notice), is(200));
 	}
@@ -122,7 +139,8 @@ public class AirbrakeNotifierTest {
 	@Test
 	public void testSendExceptionNoticeWithFilteredBacktrace() {
 		final Exception EXCEPTION = newException(ERROR_MESSAGE);
-		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY, new QuietRubyBacktrace(), EXCEPTION, "test").newNotice();
+		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY,
+				new QuietRubyBacktrace(), EXCEPTION, "test").newNotice();
 
 		assertThat(notifier.notify(notice), is(200));
 	}
@@ -130,7 +148,8 @@ public class AirbrakeNotifierTest {
 	@Test
 	public void testSendExceptionToairbrake() {
 		final Exception EXCEPTION = newException(ERROR_MESSAGE);
-		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY, EXCEPTION).newNotice();
+		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY,
+				EXCEPTION).newNotice();
 
 		assertThat(notifier.notify(notice), is(200));
 	}
@@ -138,7 +157,8 @@ public class AirbrakeNotifierTest {
 	@Test
 	public void testSendExceptionToairbrakeUsingRubyBacktrace() {
 		final Exception EXCEPTION = newException(ERROR_MESSAGE);
-		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY, new RubyBacktrace(), EXCEPTION, "test").newNotice();
+		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY,
+				new RubyBacktrace(), EXCEPTION, "test").newNotice();
 
 		assertThat(notifier.notify(notice), is(200));
 	}
@@ -146,23 +166,27 @@ public class AirbrakeNotifierTest {
 	@Test
 	public void testSendExceptionToairbrakeUsingRubyBacktraceAndFilteredSystemProperties() {
 		final Exception EXCEPTION = newException(ERROR_MESSAGE);
-		final AirbrakeNotice notice = new AirbrakeNoticeBuilderUsingFilteredSystemProperties(API_KEY, new RubyBacktrace(), EXCEPTION, "test").newNotice();
+		final AirbrakeNotice notice = new AirbrakeNoticeBuilderUsingFilteredSystemProperties(
+				API_KEY, new RubyBacktrace(), EXCEPTION, "test").newNotice();
 
 		assertThat(notifier.notify(notice), is(200));
 	}
 
 	@Test
 	public void testSendNoticeToairbrake() {
-		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY, ERROR_MESSAGE).newNotice();
+		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY,
+				ERROR_MESSAGE).newNotice();
 
 		assertThat(notifier.notify(notice), is(200));
 	}
 
 	@Test
 	public void testSendNoticeWithFilteredBacktrace() {
-		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY, ERROR_MESSAGE) {
+		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY,
+				ERROR_MESSAGE) {
 			{
-				backtrace(new QuietRubyBacktrace(strings(slurp(read("backtrace.txt")))));
+				backtrace(new QuietRubyBacktrace(
+						strings(slurp(read("backtrace.txt")))));
 			}
 		}.newNotice();
 
@@ -171,7 +195,8 @@ public class AirbrakeNotifierTest {
 
 	@Test
 	public void testSendNoticeWithLargeBacktrace() {
-		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY, ERROR_MESSAGE) {
+		final AirbrakeNotice notice = new AirbrakeNoticeBuilder(API_KEY,
+				ERROR_MESSAGE) {
 			{
 				backtrace(new Backtrace(strings(slurp(read("backtrace.txt")))));
 			}
